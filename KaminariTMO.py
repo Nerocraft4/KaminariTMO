@@ -31,6 +31,13 @@ def sRGB_to_RGB(img):
         pix*=255
     return img.astype(int)
 
+def green_correct(img):
+    for pix in img:
+        pix[1]-=12
+        if pix[1]<=0:
+            pix[1]=0
+    return img.astype(int)
+
 def getNorm(norm_y, pix):
     mark = 0
     val = 1/len(norm_y)
@@ -50,15 +57,24 @@ def XYZ_sRGB(img):
         pix = np.matmul(F_inv, pix)
     return img
 
+def gamma(img):
+    for pix in img:
+        pix[1] = pix[1]**1
+    return img
+
 #input
 #exposures = [img1, img2, img3, img4, img5, img6]
 #test input and preproc
-img1 = Image.open(r"./sample_images/640px-StLouisArchMultExpEV-4.72.jpg")
-img2 = Image.open(r"./sample_images/640px-StLouisArchMultExpEV-1.82.jpg")
-img3 = Image.open(r"./sample_images/640px-StLouisArchMultExpEV+1.51.jpg")
-img4 = Image.open(r"./sample_images/640px-StLouisArchMultExpEV+4.09.jpg")
+# img1 = Image.open(r"./sample_images/640px-StLouisArchMultExpEV-4.72.jpg")
+# img2 = Image.open(r"./sample_images/640px-StLouisArchMultExpEV-1.82.jpg")
+# img3 = Image.open(r"./sample_images/640px-StLouisArchMultExpEV+1.51.jpg")
+# img4 = Image.open(r"./sample_images/640px-StLouisArchMultExpEV+4.09.jpg")
+img1 = Image.open(r"./sample_images/scene1+2.jpeg")
+img2 = Image.open(r"./sample_images/scene1+1.jpeg")
+img3 = Image.open(r"./sample_images/scene1-1.jpeg")
+img4 = Image.open(r"./sample_images/scene1-2.jpeg")
 exposures = []
-evs = [-4.72, -1.82, +1.51, +4.09]
+evs = [2, 1, -1, -2]
 for img in [img1,img2,img3,img4]: # bruh
     img = np.array(img)
     shape_org = img.shape
@@ -168,7 +184,7 @@ def method_3(exposures, evs):
 
         #Apply gamma correction to Y-Level
         K = 1/3
-        B = 1
+        B = 1 #this makes it look greener for some reason!
         gamma = (1/(K+np.exp((evs[i]-K)/B))+1)/2
         print("applying gamma",gamma) #deb
         Ylevel = [pixel**(1/gamma) for pixel in Ylevel]
@@ -190,7 +206,7 @@ gray_modula, gray_median = method_3(exposures, evs) #method 3
 final_Ylevel = np.zeros(shape_new[0])
 for i in range(4):
     final_Ylevel+=gray_modula[i]
-    deb_im1 = Image.fromarray(final_Ylevel.reshape([shape_org[0],shape_org[1]])*255)
+    deb_im1 = Image.fromarray((final_Ylevel.reshape([shape_org[0],shape_org[1]])*255).astype(np.uint8))
     deb_im1.show() #deb
 
 #color interpolation
@@ -209,13 +225,15 @@ def color_interpolation(exposures, final_Ylevel):
             pix = img[j]
             Xj = pix[0]*w
             Zj = pix[2]*w
-            final_XYZlevels[j] += [Xj, Y[j]/4, Zj]
+            final_XYZlevels[j] += [Xj, Y[j]/4, Zj] #constant to reduce greenness
     return final_XYZlevels
 
 final_XYZ_levels = color_interpolation(exposures, final_Ylevel)
-final_sRGB_levels = XYZ_sRGB(final_XYZ_levels)
+final_XYZ_levels_gamma_corrected = gamma(final_XYZ_levels)
+final_sRGB_levels = XYZ_sRGB(final_XYZ_levels_gamma_corrected)
 final_RGB_levels = sRGB_to_RGB(final_sRGB_levels)
+final_RGB_levels = green_correct(final_RGB_levels)
 final_image = np.reshape(final_RGB_levels, shape_org)
-print(final_image)
-plt.imshow(final_image)
-plt.show()
+
+
+cv2.imwrite('Escena1_Kaminari7.jpg', final_image)
