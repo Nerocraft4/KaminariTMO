@@ -14,5 +14,5 @@ Sum and average expositions
 Add a touch of saturation to compensate desaturated images
 Convert to RGB
 Weighted average with the raw image to get dark areas back
-Save image as  "finalmix.jpg"
+Save image as "finalmix.jpg"
 ```
