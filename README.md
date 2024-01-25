@@ -5,12 +5,21 @@ The code is intended to be used with 12-bit HDR images (supposedly in sRGB/RGB).
 
 ### Pseudocode
 Read the image
+
 For each exposition:
+
   Convert to HSL
+  
   Apply KMeans on Y (lightness) channel
+  
   Apply certain gamma transformation to each pixel, depending on the cluster they are on
+
 Sum and average expositions
+
 Add a touch of saturation to compensate desaturated images
+
 Convert to RGB
+
 Weighted average with the raw image to get dark areas back
+
 Save image as  "finalmix.jpg"
