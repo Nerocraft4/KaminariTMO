@@ -1,3 +1,9 @@
+'''
+雷-TMO / Kaminari-TMO
+Pau Blasco i Roca
+1/1/2024
+'''
+
 from PIL import Image, ImageEnhance
 from scipy.ndimage import gaussian_filter
 import numpy as np
