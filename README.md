@@ -5,6 +5,8 @@ A file dump/upload was made the 28th of June of 2024, as a backup for the second
 
 As of the 18th of July of 2024, another minor edit was made to the GitHub thesis pdf, fixing header/footer issues that went unnoticed, as well as minor edits in the abstract.
 
+As of the 19th of July, an [online version](https://ddd.uab.cat/record/299094) was published to my university's database.
+
 # About the source code, KaminariTMO
 The code is intended to be used with 12-bit HDR images (supposedly in sRGB/RGB). To use it, simply change the "scene.hdr" by your own filename.
 
